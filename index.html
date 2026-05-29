@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Whomaguy — Digital practice for founder-led brands</title>
+  <meta name="description" content="One operator, two disciplines: marketing that performs and the digital systems behind it that scale. Built for founder-led brands.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* =========================================================
+       DESIGN TOKENS
+       Mirror the spec's Color Style names verbatim so they map
+       1:1 to Framer Color Styles when the site moves over.
+       ========================================================= */
+    :root {
+      --cream-bg: #F4EFE6;
+      --cream-surface: #FBF7F0;
+      --cream-deep: #ECE5D8;
+      --cream-muted: #D6CCBA;
+      --ink: #211C17;
+      --ink-darker: #1A1612;
+      --ink-muted: #534B41;
+      --ink-soft: #6B6258;
+      --ink-faint: #8A7F70;
+      --ink-fg: #F4EFE6;
+      --terracotta: #C2563B;
+      --terracotta-hover: #A8482F;
+      --terracotta-deep: #7A3320;
+      --terracotta-soft: #EBD9CF;
+      --border-soft: rgba(33, 28, 23, 0.10);
+      --border-strong: rgba(33, 28, 23, 0.18);
+      --border-dark: rgba(244, 239, 230, 0.10);
+      --shadow-card: 0 1px 3px rgba(33, 28, 23, 0.04);
+
+      --container: 1120px;
+      --radius-btn: 8px;
+      --radius-card: 12px;
+      --radius-pill: 30px;
+    }
+
+    /* =========================================================
+       RESET + BASE
+       ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--cream-bg);
+      color: var(--ink);
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      font-size: 17px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    h1, h2, h3 { margin: 0; font-family: 'Fraunces', Georgia, serif; font-weight: 370; color: var(--ink); font-variation-settings: "opsz" 144; }
+    p { margin: 0; }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; padding: 0; color: inherit; }
+    :focus-visible { outline: 2px solid var(--terracotta); outline-offset: 2px; border-radius: 4px; }
+
+    /* =========================================================
+       TYPE SCALE  (mirrors the Text Styles in the spec)
+       ========================================================= */
+    .h1   { font-family: 'Fraunces', serif; font-weight: 370; font-size: clamp(40px, 5.6vw, 68px); line-height: 1.05; letter-spacing: -0.02em; }
+    .h2   { font-family: 'Fraunces', serif; font-weight: 370; font-size: clamp(30px, 4vw, 44px);   line-height: 1.10; letter-spacing: -0.015em; }
+    .h2-xl{ font-size: clamp(34px, 5vw, 56px); }
+    .h2-sm{ font-size: clamp(28px, 3.5vw, 36px); }
+    .h3   { font-family: 'Fraunces', serif; font-weight: 400; font-size: clamp(22px, 2.4vw, 28px); line-height: 1.20; letter-spacing: -0.01em; }
+    .h3-card { font-size: clamp(22px, 2.2vw, 26px); }
+    .body-large { font-size: clamp(17px, 1.4vw, 19px); line-height: 1.6; color: var(--ink-muted); }
+    .body-large.ink { color: var(--ink); }
+    .body  { font-size: 17px; line-height: 1.65; color: var(--ink-muted); }
+    .body.ink { color: var(--ink); }
+    .body-small { font-size: 15px; line-height: 1.55; }
+    .caption { font-size: 13px; line-height: 1.5; }
+    .eyebrow {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', ui-monospace, monospace;
+      font-weight: 500;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: var(--terracotta-soft);
+      color: var(--terracotta-deep);
+    }
+    .eyebrow.dark { background: var(--terracotta-deep); color: var(--terracotta-soft); }
+    .sublabel-mono {
+      font-family: 'IBM Plex Mono', monospace;
+      font-weight: 500;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--terracotta-soft);
+    }
+
+    /* =========================================================
+       LAYOUT — container, section padding rhythm
+       ========================================================= */
+    .container { max-width: var(--container); margin: 0 auto; padding: 0 32px; }
+    @media (min-width: 810px)  { .container { padding: 0 48px; } }
+    @media (min-width: 1200px) { .container { padding: 0 64px; } }
+
+    section { padding: 64px 0; }
+    @media (min-width: 810px)  { section { padding: 80px 0; } }
+    @media (min-width: 1200px) { section { padding: 112px 0; } }
+    .section--tall  { padding: 64px 0; }
+    @media (min-width: 810px)  { .section--tall { padding: 100px 0; } }
+    @media (min-width: 1200px) { .section--tall { padding: 144px 0; } }
+    .section--ink   { background: var(--ink); color: var(--ink-fg); padding: 80px 0; }
+    @media (min-width: 1200px) { .section--ink { padding: 120px 0; } }
+    .section--ink h1, .section--ink h2, .section--ink h3 { color: var(--ink-fg); }
+    .section--ink .body, .section--ink .body-large { color: var(--cream-muted); }
+    .center { text-align: center; }
+    .center .eyebrow { margin-bottom: 16px; }
+    .stack-720 { max-width: 720px; margin: 0 auto; }
+    .stack-680 { max-width: 680px; margin: 0 auto; }
+    .stack-640 { max-width: 640px; margin: 0 auto; }
+    .prose-640 { max-width: 640px; }
+    .prose-600 { max-width: 600px; }
+    .prose-560 { max-width: 560px; }
+    .prose-540 { max-width: 540px; }
+    .mt-12 { margin-top: 12px; }
+    .mt-16 { margin-top: 16px; }
+    .mt-20 { margin-top: 20px; }
+    .mt-24 { margin-top: 24px; }
+    .mt-28 { margin-top: 28px; }
+    .mt-32 { margin-top: 32px; }
+    .mt-40 { margin-top: 40px; }
+
+    /* =========================================================
+       SKIP LINK
+       ========================================================= */
+    .skip-link {
+      position: absolute; left: 16px; top: 16px; z-index: 100;
+      padding: 10px 14px; border-radius: 8px;
+      background: var(--ink); color: var(--ink-fg);
+      transform: translateY(-200%);
+      transition: transform 180ms ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
+
+    /* =========================================================
+       BUTTONS
+       ========================================================= */
+    .btn-primary {
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+      background: var(--terracotta); color: #F8F2E9;
+      padding: 14px 26px; border-radius: var(--radius-btn);
+      font-size: 15px; font-weight: 500; line-height: 1;
+      transition: background 180ms ease, transform 180ms ease;
+    }
+    .btn-primary:hover { background: var(--terracotta-hover); transform: translateY(-1px); }
+    .btn-primary--large { padding: 16px 30px; font-size: 16px; }
+
+    .btn-secondary {
+      display: inline-block; color: var(--ink);
+      padding: 14px 8px; border-bottom: 1px solid var(--ink);
+      font-size: 15px; font-weight: 500; line-height: 1;
+      transition: color 180ms ease;
+    }
+    .btn-secondary:hover { color: var(--terracotta); }
+    .section--ink .btn-secondary { color: var(--ink-fg); border-bottom-color: var(--ink-fg); }
+    .section--ink .btn-secondary:hover { color: var(--terracotta-soft); }
+
+    .btn-nav {
+      display: inline-block; background: var(--ink); color: var(--cream-bg);
+      padding: 9px 16px; border-radius: 7px;
+      font-size: 13px; font-weight: 500; line-height: 1;
+      transition: background 180ms ease;
+    }
+    .btn-nav:hover { background: #3A322C; }
+
+    .link-arrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 15px; font-weight: 500; color: var(--terracotta);
+      transition: gap 180ms ease;
+    }
+    .link-arrow:hover { gap: 10px; text-decoration: underline; text-underline-offset: 4px; }
+
+    /* =========================================================
+       NAVIGATION
+       ========================================================= */
+    .nav {
+      position: fixed; inset: 0 0 auto 0; z-index: 50;
+      padding: 18px 0;
+      border-bottom: 0.5px solid transparent;
+      background: transparent;
+      transition: background 200ms ease, border-color 200ms ease, padding 200ms ease;
+    }
+    .nav.is-scrolled {
+      background: rgba(236, 229, 216, 0.92);
+      border-bottom-color: var(--border-soft);
+      backdrop-filter: saturate(140%) blur(6px);
+      -webkit-backdrop-filter: saturate(140%) blur(6px);
+    }
+    .nav__inner {
+      display: flex; align-items: center; justify-content: space-between; gap: 24px;
+    }
+    .nav__brand {
+      font-family: 'Fraunces', serif; font-weight: 370; font-size: 23px;
+      letter-spacing: -0.01em; color: var(--ink); line-height: 1;
+    }
+    .nav__links {
+      display: none; align-items: center; gap: 24px;
+    }
+    .nav__links--right { display: none; align-items: center; }
+    @media (min-width: 810px) {
+      .nav__links { display: flex; }
+      .nav__links--right { display: flex; gap: 32px; align-items: center; }
+    }
+    .nav__link {
+      font-size: 14px; color: var(--ink-soft);
+      transition: color 180ms ease;
+    }
+    .nav__link:hover { color: var(--ink); }
+    .nav__menu-btn {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px; border-radius: 8px; color: var(--ink);
+    }
+    @media (min-width: 810px) { .nav__menu-btn { display: none; } }
+
+    /* Mobile slide-in menu */
+    .mobile-menu {
+      position: fixed; inset: 0; z-index: 60;
+      background: var(--cream-bg);
+      transform: translateX(100%);
+      transition: transform 240ms ease;
+      display: flex; flex-direction: column;
+      padding: 24px 32px;
+    }
+    .mobile-menu.is-open { transform: translateX(0); }
+    .mobile-menu__head { display: flex; justify-content: space-between; align-items: center; }
+    .mobile-menu__list { display: flex; flex-direction: column; gap: 8px; margin-top: 48px; }
+    .mobile-menu__list a { font-family: 'Fraunces', serif; font-size: 28px; padding: 12px 0; color: var(--ink); }
+    .mobile-menu__cta { margin-top: auto; }
+    .mobile-menu__cta .btn-primary { width: 100%; padding: 18px; }
+
+    /* =========================================================
+       HERO  (Section 2)
+       ========================================================= */
+    .hero { padding-top: 128px; padding-bottom: 80px; }
+    @media (min-width: 1200px) { .hero { padding-top: 160px; padding-bottom: 144px; } }
+    .hero__grid { display: grid; gap: 48px; align-items: center; }
+    @media (min-width: 810px) { .hero__grid { grid-template-columns: 6fr 4fr; gap: 56px; } }
+    @media (min-width: 1200px) { .hero__grid { gap: 80px; } }
+    .hero__text { max-width: 720px; }
+    .hero__title-emph { color: var(--terracotta); }
+    .hero__title-emph + span { color: var(--ink); }
+    .hero__buttons { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+    .hero__media-wrap {
+      aspect-ratio: 4/5; max-width: 480px; margin-left: auto; width: 100%;
+      border-radius: var(--radius-card); overflow: hidden;
+      background: var(--cream-deep);
+    }
+    @media (max-width: 809px) {
+      .hero__media-wrap { aspect-ratio: 16/10; margin: 32px 0 0; max-width: none; }
+    }
+    .hero__media {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      background:
+        radial-gradient(circle at 30% 25%, rgba(194,86,59,0.18), transparent 55%),
+        linear-gradient(140deg, #C9B498 0%, #8C7355 55%, #4A3A2C 100%);
+    }
+    .hero__media-label {
+      position: relative; height: 100%; display: flex; align-items: flex-end; padding: 24px;
+      color: rgba(255,255,255,0.7); font-family: 'IBM Plex Mono', monospace; font-size: 11px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+
+    /* =========================================================
+       AUDIO CHIP  (component)
+       ========================================================= */
+    .audio-chip {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 9px 16px 9px 12px;
+      background: var(--cream-surface);
+      border: 0.5px solid var(--border-soft);
+      border-radius: var(--radius-pill);
+      box-shadow: var(--shadow-card);
+      transition: border-color 180ms ease, transform 180ms ease;
+      color: var(--ink);
+    }
+    .audio-chip:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+    .audio-chip__play {
+      width: 26px; height: 26px; border-radius: 50%;
+      background: var(--terracotta); color: var(--cream-bg);
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .audio-chip__wave {
+      display: inline-flex; align-items: center; gap: 2px; height: 22px;
+    }
+    .audio-chip__wave span {
+      display: inline-block; width: 3px; border-radius: 2px;
+      background: var(--terracotta);
+    }
+    .audio-chip__wave span.dim { background: var(--cream-deep); }
+    .audio-chip__meta { font-size: 13px; color: var(--ink-soft); }
+    .audio-chip-stack { display: flex; flex-direction: column; gap: 12px; align-items: flex-start; }
+    @media (max-width: 809px) { .audio-chip-stack { align-items: center; } }
+
+    /* =========================================================
+       WHO THIS IS FOR  (Section 3)
+       ========================================================= */
+    .who__grid { display: grid; gap: 48px; }
+    @media (min-width: 810px) { .who__grid { grid-template-columns: 4fr 6fr; gap: 64px; } }
+    .em-list { list-style: none; padding: 0; margin: 16px 0 0; }
+    .em-list li {
+      font-size: 17px; line-height: 1.6; color: var(--ink);
+      padding: 0; margin-bottom: 10px;
+    }
+    .em-list li::before { content: "— "; color: var(--ink); }
+
+    /* =========================================================
+       WHAT WE DO — TWO WINGS  (Section 4, dark)
+       ========================================================= */
+    .wings { display: grid; gap: 60px; margin-top: 64px; }
+    @media (min-width: 810px) { .wings { grid-template-columns: 1fr 1fr; gap: 60px; } }
+    .wing__h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 28px; line-height: 1.2; color: var(--terracotta); }
+    .wing__body { font-size: 17px; line-height: 1.65; color: var(--cream-muted); margin-top: 16px; max-width: 520px; }
+    .wing__chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .chip {
+      display: inline-block;
+      background: var(--terracotta-deep); color: var(--terracotta-soft);
+      padding: 6px 12px; border-radius: 6px;
+      font-size: 13px; font-weight: 500; line-height: 1.2;
+    }
+
+    /* =========================================================
+       FEATURED OFFERING  (Section 5)
+       ========================================================= */
+    .card-feature {
+      background: var(--cream-surface);
+      border: 0.5px solid var(--border-soft);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-card);
+      padding: 28px; max-width: 880px; margin: 48px auto 0;
+    }
+    @media (min-width: 810px) { .card-feature { padding: 40px; } }
+    .card-feature__grid { display: grid; gap: 32px; align-items: center; }
+    @media (min-width: 810px) { .card-feature__grid { grid-template-columns: 6fr 4fr; gap: 48px; } }
+    .featured-footnote {
+      display: block; margin: 40px auto 0; text-align: center;
+      font-size: 13px; color: var(--ink-faint);
+    }
+
+    /* =========================================================
+       HOW WE WORK  (Section 6)
+       ========================================================= */
+    .how { text-align: center; }
+    .how .body-large { margin-left: auto; margin-right: auto; }
+
+    /* =========================================================
+       ABOUT  (Section 7, dark)
+       ========================================================= */
+    .about__grid { display: grid; gap: 48px; align-items: center; }
+    @media (min-width: 810px) { .about__grid { grid-template-columns: 4fr 6fr; gap: 64px; } }
+    .about__portrait-wrap {
+      aspect-ratio: 4/5; border-radius: var(--radius-card); overflow: hidden;
+      max-width: 360px; background: #2a221b;
+    }
+    @media (max-width: 809px) { .about__portrait-wrap { max-width: none; } }
+    .about__portrait {
+      width: 100%; height: 100%; object-fit: cover;
+      background:
+        radial-gradient(circle at 60% 30%, rgba(194,86,59,0.18), transparent 60%),
+        linear-gradient(160deg, #3a3027 0%, #211C17 100%);
+    }
+    .about__links { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+    .about__links a {
+      font-size: 15px; color: var(--ink-fg);
+      border-bottom: 1px solid rgba(244,239,230,0.3);
+      padding-bottom: 2px; transition: border-color 180ms ease;
+    }
+    .about__links a:hover { border-bottom-color: var(--terracotta-soft); color: var(--terracotta-soft); }
+
+    /* =========================================================
+       PROOF placeholder  (Section 8)
+       ========================================================= */
+    .proof { text-align: center; }
+    .quote-block { margin-top: 40px; }
+    .quote {
+      font-family: 'Fraunces', serif; font-style: italic; font-weight: 400;
+      font-size: 22px; line-height: 1.4; color: var(--ink);
+    }
+    .quote-attr { display: block; margin-top: 12px; font-size: 14px; color: var(--ink-soft); }
+
+    /* =========================================================
+       FAQ  (Section 9)
+       ========================================================= */
+    .faq__list { max-width: 760px; margin: 48px auto 0; }
+    .faq-item {
+      border-top: 0.5px solid var(--border-soft);
+    }
+    .faq-item:last-child { border-bottom: 0.5px solid var(--border-soft); }
+    .faq-item summary {
+      list-style: none;
+      display: flex; justify-content: space-between; align-items: center; gap: 16px;
+      padding: 24px 0; cursor: pointer;
+      font-size: 18px; font-weight: 500; color: var(--ink);
+    }
+    .faq-item summary::-webkit-details-marker { display: none; }
+    .faq-item summary .chev {
+      flex-shrink: 0; width: 18px; height: 18px; color: var(--ink-soft);
+      transition: transform 200ms ease;
+    }
+    .faq-item[open] summary .chev { transform: rotate(180deg); }
+    .faq-item__answer {
+      font-size: 16px; line-height: 1.6; color: var(--ink-muted);
+      padding: 0 0 24px; margin-top: -8px; max-width: 660px;
+    }
+
+    /* =========================================================
+       FOOTER CTA  (Section 10, dark)
+       ========================================================= */
+    .footer-cta { text-align: center; }
+    .footer-cta__h2 { font-size: clamp(40px, 6vw, 56px); }
+    .footer-cta .body-large { margin-left: auto; margin-right: auto; }
+
+    /* =========================================================
+       FOOTER
+       ========================================================= */
+    .site-footer {
+      background: var(--ink-darker);
+      color: var(--cream-muted);
+      padding: 48px 0;
+    }
+    .site-footer .container { padding-bottom: 0; }
+    .footer__grid {
+      display: grid; gap: 32px;
+    }
+    @media (min-width: 810px) { .footer__grid { grid-template-columns: 2fr 1fr 1fr; gap: 64px; } }
+    .footer__brand-mark {
+      font-family: 'Fraunces', serif; font-weight: 370; font-size: 20px;
+      color: var(--ink-fg);
+    }
+    .footer__tag { font-size: 13px; color: var(--cream-muted); margin-top: 8px; }
+    .footer__heading {
+      font-family: 'IBM Plex Mono', monospace; font-weight: 500;
+      font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--terracotta-soft); margin-bottom: 12px;
+    }
+    .footer__links { display: flex; flex-direction: column; gap: 8px; }
+    .footer__links a { font-size: 13px; color: var(--cream-muted); transition: color 180ms ease; }
+    .footer__links a:hover { color: var(--ink-fg); }
+    .footer__divider {
+      border: 0; border-top: 0.5px solid var(--border-dark);
+      margin: 48px 0 0;
+    }
+    .footer__bottom {
+      display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      padding: 24px 0 0;
+      font-size: 12px; color: var(--cream-muted);
+    }
+
+    /* =========================================================
+       UTILITIES
+       ========================================================= */
+    .visually-hidden {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .reveal { opacity: 0; transform: translateY(8px); transition: opacity 600ms ease, transform 600ms ease; }
+    .reveal.is-visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+      .reveal { opacity: 1; transform: none; }
+      html { scroll-behavior: auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- ============================================================
+       STICKY NAVIGATION
+       ============================================================ -->
+  <header class="nav" id="nav" aria-label="Primary">
+    <div class="container">
+      <div class="nav__inner">
+        <a href="#top" class="nav__brand" aria-label="Whomaguy — home">whomaguy</a>
+        <nav class="nav__links--right" aria-label="Primary navigation">
+          <div class="nav__links">
+            <a href="#how-we-work" class="nav__link">How it works</a>
+            <a href="#featured" class="nav__link">Pricing</a>
+            <a href="#faq" class="nav__link">FAQ</a>
+            <a href="#footer-cta" class="nav__link">Work with us</a>
+          </div>
+          <a href="#footer-cta" class="btn-nav nav__cta">Book a call</a>
+        </nav>
+        <button class="nav__menu-btn" id="menuOpen" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile menu overlay -->
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+    <div class="mobile-menu__head">
+      <span class="nav__brand">whomaguy</span>
+      <button class="nav__menu-btn" id="menuClose" aria-label="Close menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <div class="mobile-menu__list">
+      <a href="#how-we-work">How it works</a>
+      <a href="#featured">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="#footer-cta">Work with us</a>
+    </div>
+    <div class="mobile-menu__cta">
+      <a href="#footer-cta" class="btn-primary btn-primary--large">Book a call</a>
+    </div>
+  </div>
+
+  <main id="main">
+    <span id="top"></span>
+
+    <!-- ============================================================
+         SECTION 2 — HERO
+         ============================================================ -->
+    <section class="hero" aria-labelledby="hero-h1">
+      <div class="container">
+        <div class="hero__grid">
+          <div class="hero__text">
+            <span class="eyebrow">Digital practice for founder-led brands</span>
+            <h1 class="h1 mt-20" id="hero-h1">
+              Your marketing engine.<br>
+              The systems behind it.<br>
+              <span class="hero__title-emph">One guy to call</span><span>.</span>
+            </h1>
+            <p class="body-large mt-24 prose-540">
+              Whomaguy is a consulting practice for founder-led brands — operators who built the thing, run the thing, and know exactly where the friction is. Two disciplines, one relationship: marketing that actually performs, and the digital systems behind it that actually scale. No agency theater. No vendor sprawl. No discovery call about a discovery call.
+            </p>
+            <div class="hero__buttons mt-28">
+              <a href="#footer-cta" class="btn-primary">Book a 30-minute call</a>
+              <a href="#what-we-do" class="btn-secondary">See what we do</a>
+            </div>
+            <div class="mt-28">
+              <a href="/receptionist" class="audio-chip" aria-label="Play sample: hear a live call, 42 seconds. Opens AI Receptionist page.">
+                <span class="audio-chip__play" aria-hidden="true">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg>
+                </span>
+                <span class="audio-chip__wave" aria-hidden="true">
+                  <span style="height:6px"></span><span style="height:12px"></span><span style="height:16px"></span>
+                  <span style="height:10px"></span><span style="height:18px"></span><span style="height:14px"></span>
+                  <span class="dim" style="height:8px"></span><span class="dim" style="height:6px"></span>
+                </span>
+                <span class="audio-chip__meta">Hear a live call · 0:42</span>
+              </a>
+            </div>
+          </div>
+          <div class="hero__media-wrap" aria-hidden="true">
+            <!-- Replace src with final hero photograph (~960x1200, warm interior, hands, shop at golden hour) -->
+            <div class="hero__media">
+              <div class="hero__media-label">Hero photo placeholder</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 3 — WHO THIS IS FOR
+         ============================================================ -->
+    <section aria-labelledby="who-h2">
+      <div class="container">
+        <div class="who__grid">
+          <div>
+            <span class="eyebrow">Who this is for</span>
+            <h2 class="h2 mt-20" id="who-h2">Built for the awkward stage.</h2>
+          </div>
+          <div>
+            <p class="body-large ink">
+              You're past scrappy. You're not yet big enough to hire a CMO and a CTO. You're somewhere between $500K and $10M in revenue, you're the person signing every check, and the gap between what your business needs digitally and what you have time to build yourself widens every quarter. That gap is the work.
+            </p>
+            <h3 class="h3 mt-32">This is probably you if:</h3>
+            <ul class="em-list">
+              <li>You're the founder. The buck stops with you.</li>
+              <li>Your marketing kinda works and you can't quite explain why.</li>
+              <li>Your tech stack is held together by three Zapiers and a prayer.</li>
+              <li>Your dashboards lie to you, or there are no dashboards at all.</li>
+              <li>You've been burned by at least one agency.</li>
+              <li>You want a builder, not a deck about building.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 4 — WHAT WE DO (two wings, ink background)
+         ============================================================ -->
+    <section class="section--ink" id="what-we-do" aria-labelledby="ww-h2">
+      <div class="container">
+        <div class="stack-720 center">
+          <span class="eyebrow dark">What we do</span>
+          <h2 class="h2 mt-20" id="ww-h2">Two disciplines, one relationship.</h2>
+        </div>
+        <div class="wings">
+          <!-- Wing 1: Marketing -->
+          <div>
+            <h3 class="wing__h3">Marketing that performs.</h3>
+            <p class="wing__body">
+              We rebuild the marketing engine so you stop guessing. Attribution that actually attributes. Funnels that show which lever moved which number. Ad accounts that don't burn budget on autopilot. Lifecycle email that does more than send. Content systems that turn the work you're already doing into compounding distribution.
+            </p>
+            <div class="mt-24">
+              <p class="sublabel-mono">Common starting points</p>
+              <div class="wing__chips">
+                <span class="chip">Attribution rebuild</span>
+                <span class="chip">Paid media audit + reset</span>
+                <span class="chip">Lifecycle email overhaul</span>
+                <span class="chip">Content engine setup</span>
+              </div>
+            </div>
+          </div>
+          <!-- Wing 2: Systems -->
+          <div>
+            <h3 class="wing__h3">Systems that scale.</h3>
+            <p class="wing__body">
+              We build the digital infrastructure your brand actually runs on. AI that picks up the phone when nobody else can. Internal tools that compress a week of manual work into one button. Integrations that finally make your seven SaaS tools talk to each other. The data layer that turns "I think" into "I know."
+            </p>
+            <div class="mt-24">
+              <p class="sublabel-mono">Common starting points</p>
+              <div class="wing__chips">
+                <span class="chip">AI voice agents</span>
+                <span class="chip">Internal tooling</span>
+                <span class="chip">Integrations &amp; automation</span>
+                <span class="chip">Data + reporting infrastructure</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 5 — FEATURED OFFERING
+         ============================================================ -->
+    <section id="featured" aria-labelledby="featured-h2">
+      <div class="container">
+        <div class="stack-680 center">
+          <span class="eyebrow">Featured</span>
+          <h2 class="h2 mt-20" id="featured-h2">Productized work.</h2>
+          <p class="body-large mt-24 prose-600" style="margin-left:auto;margin-right:auto;">
+            Some problems we've solved enough times that we built them into fixed-scope products. Same outcome, predictable price, no proposal back-and-forth.
+          </p>
+        </div>
+
+        <article class="card-feature" aria-labelledby="featured-card-h3">
+          <div class="card-feature__grid">
+            <div>
+              <span class="eyebrow">AI Receptionist · Barbers &amp; salons</span>
+              <h3 class="h3 h3-card mt-16" id="featured-card-h3">
+                Picks up every call. Books the appointment. Sounds like part of the shop.
+              </h3>
+              <p class="body mt-16">
+                Two weeks to live. $2,400 setup. $450/month, all in — voice minutes, hosting, and ongoing tuning included.
+              </p>
+              <div class="mt-24">
+                <a href="/receptionist" class="link-arrow" aria-label="Learn more about the AI Receptionist">
+                  Learn more
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                </a>
+              </div>
+            </div>
+            <div class="audio-chip-stack">
+              <a href="/receptionist#sample-1" class="audio-chip" aria-label="Play sample: Booking a Friday fade, 42 seconds">
+                <span class="audio-chip__play" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg></span>
+                <span class="audio-chip__wave" aria-hidden="true">
+                  <span style="height:6px"></span><span style="height:14px"></span><span style="height:18px"></span>
+                  <span style="height:10px"></span><span style="height:16px"></span><span style="height:12px"></span>
+                  <span class="dim" style="height:8px"></span><span class="dim" style="height:6px"></span>
+                </span>
+                <span class="audio-chip__meta">Booking a Friday fade · 0:42</span>
+              </a>
+              <a href="/receptionist#sample-2" class="audio-chip" aria-label="Play sample: Walk-in price question, 31 seconds">
+                <span class="audio-chip__play" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="6,4 20,12 6,20"/></svg></span>
+                <span class="audio-chip__wave" aria-hidden="true">
+                  <span style="height:8px"></span><span style="height:14px"></span><span style="height:10px"></span>
+                  <span style="height:18px"></span><span style="height:12px"></span><span style="height:16px"></span>
+                  <span class="dim" style="height:8px"></span><span class="dim" style="height:6px"></span>
+                </span>
+                <span class="audio-chip__meta">Walk-in price question · 0:31</span>
+              </a>
+            </div>
+          </div>
+        </article>
+
+        <small class="featured-footnote">More productized offerings launching this year.</small>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 6 — HOW WE WORK
+         ============================================================ -->
+    <section id="how-we-work" aria-labelledby="how-h2">
+      <div class="container">
+        <div class="stack-720 how">
+          <span class="eyebrow">How we work</span>
+          <h2 class="h2 mt-20" id="how-h2">Diagnose. Build. Stay long enough to make sure it holds.</h2>
+          <p class="body-large mt-24 prose-640" style="margin-left:auto;margin-right:auto;">
+            The first conversation is 30 minutes. You tell us what's broken; we tell you whether we can fix it. If we can, you get a scoped fixed-price proposal in 48 hours — no retainer trap, no vendor lock-in, no team you'll never meet. Most engagements run 4 to 12 weeks. Some turn into ongoing partnerships. We let the work decide.
+          </p>
+          <div class="mt-32">
+            <a href="#footer-cta" class="btn-primary">Book the 30-minute call</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 7 — ABOUT (dark)
+         ============================================================ -->
+    <section class="section--ink" id="about" aria-labelledby="about-h2">
+      <div class="container">
+        <div class="about__grid">
+          <div class="about__portrait-wrap" aria-hidden="true">
+            <!-- Replace with final portrait (~720x900, 4:5, black & white or warm color) -->
+            <div class="about__portrait"></div>
+          </div>
+          <div>
+            <span class="eyebrow dark">About the guy</span>
+            <h2 class="h2 mt-20" id="about-h2">One operator. No account manager.</h2>
+            <p class="body mt-24 prose-560">
+              Whomaguy is run by <strong style="color:var(--ink-fg); font-weight:500;">[Full Name]</strong>. I spent [X years] inside [industry / role], [specific accomplishment or focus area] for [type of company or clients], before realizing the founders I most wanted to work with were the ones who couldn't afford a full agency and couldn't afford to wait either.
+            </p>
+            <p class="body mt-16 prose-560">
+              So I built this. The work is mine. The thinking is mine. You won't be passed off to an account manager, because there isn't one.
+            </p>
+            <div class="about__links">
+              <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+              <a href="mailto:hello@whomaguy.com">Email</a>
+              <a href="#">[Optional third link]</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 8 — PROOF (placeholder)
+         ============================================================ -->
+    <section class="proof" aria-labelledby="proof-h2" style="padding-top:96px;padding-bottom:96px;">
+      <div class="container">
+        <div class="stack-720">
+          <span class="eyebrow">Recent work</span>
+          <h2 class="h2 h2-sm mt-20" id="proof-h2">Built for and with operators like:</h2>
+          <p class="body mt-24 prose-600" style="margin-left:auto;margin-right:auto;">
+            Current and recent engagements span DTC apparel, independent hospitality, B2B SaaS, and creator-led brands. Detailed case studies launching alongside our first published wins.
+          </p>
+          <div class="quote-block">
+            <p class="quote">"He didn't pitch us a deck. He pitched us a number, and then hit it."</p>
+            <span class="quote-attr">Founder, independent hospitality group</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 9 — FAQ
+         ============================================================ -->
+    <section id="faq" aria-labelledby="faq-h2">
+      <div class="container">
+        <div class="stack-640 center">
+          <span class="eyebrow">FAQ</span>
+          <h2 class="h2 mt-20" id="faq-h2">The real questions.</h2>
+        </div>
+        <div class="faq__list">
+          <details class="faq-item">
+            <summary>
+              What does this actually cost?
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <p class="faq-item__answer">Most engagements are between $5,000 and $40,000 depending on scope. Productized offerings have fixed pricing on their pages. We send a real number before you sign anything.</p>
+          </details>
+          <details class="faq-item">
+            <summary>
+              Are you an agency?
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <p class="faq-item__answer">No. An agency sells you a roster. Whomaguy is one operator, with a tight network of specialists pulled in when the work calls for it.</p>
+          </details>
+          <details class="faq-item">
+            <summary>
+              How do you handle the marketing-vs.-systems split?
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <p class="faq-item__answer">Most engagements touch both. The two wings exist so we can scope clearly, not because the work splits cleanly in practice.</p>
+          </details>
+          <details class="faq-item">
+            <summary>
+              What if I just want a one-off audit?
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <p class="faq-item__answer">That's offered as a productized engagement. Fixed price, 10 business days, written deliverable.</p>
+          </details>
+          <details class="faq-item">
+            <summary>
+              Who do you NOT work with?
+              <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+            </summary>
+            <p class="faq-item__answer">Pre-revenue founders, agencies hiring us to white-label, and anyone who needs three rounds of approval before a decision gets made.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         SECTION 10 — FOOTER CTA (dark)
+         ============================================================ -->
+    <section class="section--ink footer-cta" id="footer-cta" aria-labelledby="cta-h2">
+      <div class="container">
+        <div class="stack-640">
+          <h2 class="h2 footer-cta__h2" id="cta-h2">Ready to talk?</h2>
+          <p class="body-large mt-20 prose-540" style="margin-left:auto;margin-right:auto;">
+            One link. One conversation. Then a fixed proposal or a friendly no.
+          </p>
+          <div class="mt-32">
+            <a href="https://cal.com/" class="btn-primary btn-primary--large" target="_blank" rel="noopener">
+              Book the call
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
+    <footer class="site-footer">
+      <div class="container">
+        <div class="footer__grid">
+          <div>
+            <span class="footer__brand-mark">whomaguy</span>
+            <p class="footer__tag">Digital practice for founder-led brands.</p>
+          </div>
+          <div>
+            <p class="footer__heading">Site</p>
+            <div class="footer__links">
+              <a href="#how-we-work">How it works</a>
+              <a href="#featured">Pricing</a>
+              <a href="#faq">FAQ</a>
+              <a href="/receptionist">Receptionist</a>
+              <a href="#footer-cta">Contact</a>
+            </div>
+          </div>
+          <div>
+            <p class="footer__heading">Connect</p>
+            <div class="footer__links">
+              <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+              <a href="mailto:hello@whomaguy.com">Email</a>
+              <a href="#">Newsletter</a>
+            </div>
+          </div>
+        </div>
+        <hr class="footer__divider">
+        <div class="footer__bottom">
+          <span>© 2026 Whomaguy.</span>
+          <span>Built by hand.</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script>
+    // Sticky nav scroll state
+    (function () {
+      var nav = document.getElementById('nav');
+      var threshold = 80;
+      function onScroll() {
+        if (window.scrollY > threshold) nav.classList.add('is-scrolled');
+        else nav.classList.remove('is-scrolled');
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    })();
+
+    // Mobile menu
+    (function () {
+      var open = document.getElementById('menuOpen');
+      var close = document.getElementById('menuClose');
+      var menu = document.getElementById('mobileMenu');
+      function setOpen(v) {
+        menu.classList.toggle('is-open', v);
+        open.setAttribute('aria-expanded', v ? 'true' : 'false');
+        document.body.style.overflow = v ? 'hidden' : '';
+      }
+      open.addEventListener('click', function () { setOpen(true); });
+      close.addEventListener('click', function () { setOpen(false); });
+      menu.querySelectorAll('a').forEach(function (a) {
+        a.addEventListener('click', function () { setOpen(false); });
+      });
+    })();
+
+    // Subtle reveal on scroll for below-the-fold sections
+    (function () {
+      if (!('IntersectionObserver' in window)) return;
+      var sections = document.querySelectorAll('section');
+      sections.forEach(function (s, i) { if (i > 0) s.classList.add('reveal'); });
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-visible');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.08 });
+      sections.forEach(function (s, i) { if (i > 0) io.observe(s); });
+    })();
+  </script>
+</body>
+</html>
